@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b3340"/><stop offset="1" stop-color="#4a5361"/></linearGradient>
+    <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9dde2"/><stop offset="1" stop-color="#aeb4bc"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b0f16"/><stop offset="1" stop-color="#1b2433"/></linearGradient>
+  </defs>
+  <rect width="1600" height="600" fill="url(#wall)"/>
+  <rect y="430" width="1600" height="170" fill="url(#desk)"/>
+  <!-- laptop -->
+  <g transform="translate(860 120)">
+    <path d="M40 0h520a14 14 0 0 1 14 14v250H26V14A14 14 0 0 1 40 0z" fill="#1c1f26"/>
+    <rect x="44" y="14" width="486" height="236" rx="4" fill="url(#screen)"/>
+    <path d="M-30 280h664l-36 34H6z" fill="#8c929b"/>
+    <path d="M6 314h592l-8 14H14z" fill="#6f747c"/>
+  </g>
+  <!-- plant -->
+  <g transform="translate(1390 250)">
+    <path d="M70 180c-60-30-70-110-10-150 10 50 20 90 10 150z" fill="#4f7a53"/>
+    <path d="M70 180c40-50 80-70 110-60-20 50-60 80-110 60z" fill="#5f9060"/>
+    <path d="M70 180c-30-70-10-140 30-170 20 70 10 130-30 170z" fill="#3f6a47"/>
+    <path d="M30 180h80l-10 100H40z" fill="#eceff2"/>
+  </g>
+  <!-- notebook + mug -->
+  <rect x="520" y="470" width="260" height="22" rx="4" fill="#2b2f36" transform="rotate(-6 520 470)"/>
+  <g transform="translate(1180 395)"><path d="M0 0h90v70a40 40 0 0 1-40 40h-10A40 40 0 0 1 0 70z" fill="#f4f4f2"/><ellipse cx="45" cy="6" rx="45" ry="10" fill="#6b4a35"/></g>
+</svg>
