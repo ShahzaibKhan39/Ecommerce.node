@@ -1,6 +1,6 @@
 // Shopfluence – seed script:  npm run seed:shopfluence
 //   Creates the Shopfluence Management admin, sample companies/products/users and the default UIConfig.
-//   Idempotent. Flags:  --reset-ui  (restore the default storefront config)   --no-sample  (admin + UIConfig only)
+//   Idempotent. Flags:  --reset-admin  (re-apply admin password/role from env)    --reset-ui  (restore the default storefront config)   --no-sample  (admin + UIConfig only)
 // Sample data is skipped in production unless SEED_SAMPLE_DATA=true.
 const mongoose = require('mongoose');
 const env = require('./env');
@@ -27,7 +27,13 @@ async function seedAdmin() {
     throw new Error('Set SHOPFLUENCE_ADMIN_EMAIL and SHOPFLUENCE_ADMIN_PASSWORD in .env before seeding');
   }
   if (password.length < 8) throw new Error('SHOPFLUENCE_ADMIN_PASSWORD must be at least 8 characters');
-  const { user, created } = await upsertUser({ name, email, password, role: 'shopfluence_management', status: 'active' });
+  const { user, created } = await upsertUser({ name, email: email.trim().toLowerCase(), password, role: 'shopfluence_management', status: 'active' });
+  // --reset-admin: fix an admin that exists but can't log in (old password, wrong role, blocked)
+  if (!created && args.includes('--reset-admin')) {
+    user.name = name; user.password = password; user.role = 'shopfluence_management'; user.status = 'active'; user.isBlocked = false;
+    await user.save(); // pre-save hook re-hashes the password
+    console.log('[Shopfluence] Admin reset: password, role and status restored from .env');
+  }
   console.log(`[Shopfluence] Admin (Shopfluence Management) ${created ? 'created' : 'already exists'}: ${user.email}`);
 }
 
