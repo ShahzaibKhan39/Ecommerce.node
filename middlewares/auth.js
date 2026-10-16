@@ -12,10 +12,13 @@ function signToken(userId) {
 
 function cookieOptions() {
   const sevenDays = 7 * 24 * 60 * 60 * 1000;
+  // The frontend (e.g. Vercel) and API (e.g. Render) are on different sites, so the cookie must be
+  // Secure + SameSite=None or the browser silently drops it. Treat any https client origin as cross-site.
+  const crossSite = env.isProd || env.CLIENT_URLS.some((u) => u.startsWith('https://'));
   return {
     httpOnly: true,
-    secure: env.isProd,
-    sameSite: env.isProd ? 'none' : 'lax',
+    secure: crossSite,
+    sameSite: crossSite ? 'none' : 'lax',
     maxAge: sevenDays,
     path: '/',
   };
@@ -51,4 +54,17 @@ const protect = asyncHandler(async (req, res, next) => {
   next();
 });
 
-module.exports = { protect, signToken, setAuthCookie, clearAuthCookie, COOKIE_NAME };
+/** optionalAuth: like protect but a guest gets req.user = null instead of a 401 (keeps the console clean) */
+const optionalAuth = asyncHandler(async (req, res, next) => {
+  req.user = null;
+  const token = extractToken(req);
+  if (!token) return next();
+  try {
+    const decoded = jwt.verify(token, env.JWT_SECRET);
+    const user = await User.findById(decoded.sub);
+    if (user && !user.isBlocked) req.user = user;
+  } catch (_) { /* invalid / expired token => guest */ }
+  next();
+});
+
+module.exports = { optionalAuth, protect, signToken, setAuthCookie, clearAuthCookie, COOKIE_NAME };

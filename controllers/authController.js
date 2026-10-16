@@ -42,8 +42,8 @@ exports.register = asyncHandler(async (req, res) => {
       throw e;
     }
   }
-  setAuthCookie(res, user._id);
-  res.status(201).json({ user: user.toPublic() });
+  const token = setAuthCookie(res, user._id);
+  res.status(201).json({ user: user.toPublic(), token });
 });
 
 // POST /api/auth/login
@@ -54,8 +54,8 @@ exports.login = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email }).select('+password');
   if (!user || !(await user.comparePassword(password))) throw ApiError.unauthorized('Invalid email or password');
   if (user.isBlocked) throw ApiError.forbidden('This account has been suspended');
-  setAuthCookie(res, user._id);
-  res.json({ user: user.toPublic() });
+  const token = setAuthCookie(res, user._id);
+  res.json({ user: user.toPublic(), token });
 });
 
 // POST /api/auth/logout
@@ -66,7 +66,7 @@ exports.logout = asyncHandler(async (req, res) => {
 
 // GET /api/auth/me
 exports.me = asyncHandler(async (req, res) => {
-  res.json({ user: req.user.toPublic() });
+  res.json({ user: req.user ? req.user.toPublic() : null });
 });
 
 // POST /api/auth/change-password  (used to replace one-time credentials)
